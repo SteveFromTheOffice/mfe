@@ -4,8 +4,68 @@
   "defaultBase": "master",
   "nxCloudAccessToken": "NmNjZmJjNTgtZTkzNC00NWU0LWFiMTEtYWVlZjRlMGY0ZjRifHJlYWQtd3JpdGU=",
   "namedInputs": {
-    "sharedGlobals": [
-      "{workspaceRoot}/.github/workflows/ci.yml"
-    ]
+    "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
+  },
+  "targetDefaults": {
+    "build": {
+      "cache": true,
+      "dependsOn": ["^build"]
+    },
+    "@nx/eslint:lint": {
+      "cache": true,
+      "inputs": [
+        "default",
+        "{workspaceRoot}/.eslintrc.json",
+        "{workspaceRoot}/.eslintignore",
+        "{workspaceRoot}/eslint.config.js"
+      ]
+    },
+    "e2e": {
+      "cache": true,
+      "inputs": ["default", "^default"]
+    },
+    "@nx/jest:jest": {
+      "cache": true,
+      "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"],
+      "options": {
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "server": {
+      "cache": true
+    },
+    "@nx/webpack:webpack": {
+      "inputs": [
+        "production",
+        "^production",
+        {
+          "env": "NX_MF_DEV_REMOTES"
+        }
+      ],
+      "dependsOn": ["^build"]
+    }
+  },
+  "generators": {
+    "@nx/react": {
+      "application": {
+        "babel": true,
+        "style": "none",
+        "linter": "eslint",
+        "bundler": "webpack"
+      },
+      "component": {
+        "style": "none"
+      },
+      "library": {
+        "style": "none",
+        "linter": "eslint"
+      }
+    }
   }
 }
